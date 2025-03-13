@@ -12,13 +12,15 @@ def driver():
     a = -5
     b = 5
    
-    ''' create equispaced interpolation nodes'''
-    xint = np.linspace(a,b,N+1)
+    ''' create Chebyshev interpolation nodes'''
+    xint = np.zeros(N)
+    for j in range(N):
+        xint[j] = 0.5 * (a + b) + 0.5 * (b - a) * np.cos((2*j + 1) * np.pi / (2 * N))
     
-    ''' create  interpolation data'''
-    yint = np.zeros(N+1)
-    ypint = np.zeros(N+1)
-    for jj in range(N+1):
+    ''' create interpolation data'''
+    yint = np.zeros(N)
+    ypint = np.zeros(N)
+    for jj in range(N):
         yint[jj] = f(xint[jj])
         ypint[jj] = fp(xint[jj])
     
@@ -28,20 +30,19 @@ def driver():
     yevalL = np.zeros(Neval+1)
     yevalH = np.zeros(Neval+1)
     for kk in range(Neval+1):
-      yevalL[kk] = eval_lagrange(xeval[kk],xint,yint,N)
-      yevalH[kk] = eval_hermite(xeval[kk],xint,yint,ypint,N)
+        yevalL[kk] = eval_lagrange(xeval[kk],xint,yint,N-1)
+        yevalH[kk] = eval_hermite(xeval[kk],xint,yint,ypint,N-1)
 
     ''' create vector with exact values'''
     fex = np.zeros(Neval+1)
     for kk in range(Neval+1):
         fex[kk] = f(xeval[kk])
     
-    
     plt.figure()
     plt.plot(xeval,fex,'ro-', label='True Function')
     plt.plot(xeval,yevalL,'bs--',label='Lagrange') 
     plt.plot(xeval,yevalH,'c.--',label='Hermite')
-    plt.title(f'Lagrange vs Hermite vs True Function for N = {N}')
+    plt.title(f'Lagrange vs Hermite (with Chebyshev Nodes) for N = {N}')
     plt.semilogy()
     plt.legend()
     plt.show()
@@ -51,10 +52,10 @@ def driver():
     err_H = abs(yevalH-fex)
     plt.semilogy(xeval,err_L,'ro--',label='Lagrange')
     plt.semilogy(xeval,err_H,'bs--',label='Hermite')
-    plt.title(f'Error of Langrange vs Hermite for N = {N}')
+    plt.title(f'Error of Langrange vs Hermite (with Chebyshev Nodes) for N = {N}')
     plt.legend()
     plt.show()
-                   
+
 def eval_hermite(xeval,xint,yint,ypint,N):
 
     ''' Evaluate all Lagrange polynomials'''

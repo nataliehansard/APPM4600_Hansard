@@ -16,7 +16,13 @@ y_val = f(x_val)
 plt.figure(figsize=(10, 8))
 
 for i, n in enumerate(n_values):
-    x_nodes = np.linspace(a, b, n+1)
+    # Generate Chebyshev nodes
+    x_nodes = np.zeros(n)
+    for j in range(n):
+        x_nodes[j] = 0.5 * (a + b) + 0.5 * (b - a) * np.cos((2*j + 1) * np.pi / (2 * n))
+    
+    x_nodes = np.sort(x_nodes)
+   
     y_nodes = f(x_nodes)
     dy_nodes = df(x_nodes)
     
@@ -32,7 +38,7 @@ for i, n in enumerate(n_values):
     plt.plot(x_val, y_val, 'k-', label='True Function')
     plt.plot(x_val, y_spline_natural, 'b--', label='Natural Spline')
     plt.plot(x_val, y_spline_clamped, 'm-', label='Clamped Spline')
-    plt.title(f'Natural vs Clamped Splines for N = {n}')
+    plt.title(f'Natural vs Clamped (with Chebyshev Nodes) N = {n}')
     plt.legend()
 
     plt.figure() 
@@ -40,10 +46,9 @@ for i, n in enumerate(n_values):
     err_C = abs(y_spline_clamped-y_val)
     plt.semilogy(x_val,err_N,'ro--',label='Natural')
     plt.semilogy(x_val,err_C,'bs--',label='Clamped')
-    plt.title(f'Error of Natural vs Clamped Splines for N = {n}')
+    plt.title(f'Error of Natural vs Clamped Splines (with Chebyshev Nodes) for N = {n}')
     plt.legend()
     plt.show()
-
     
 plt.tight_layout()
 plt.show()
